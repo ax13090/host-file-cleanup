@@ -22,12 +22,16 @@ sub main {
 	open (my $read_file_handle,  '<', $input_path)  or die;
 	open (my $write_file_handle, '>', $output_path) or die;
 	my %seen;
+	my $discard_count = 0;
 	
 	while (<$read_file_handle>) {
 		if (m/^\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+([a-zA-Z0-9\-\.]+)/) {
 			my $address = $1;
 			my $name = $2;
-			next if defined $seen{$name};
+			if (defined $seen{$name}) {
+				++$discard_count;
+				next;
+			}
 
 			$seen{$name} = $address;
 		}
@@ -37,6 +41,7 @@ sub main {
 	close $read_file_handle or die;
 	close $write_file_handle or die;
 	
+	print "$discard_count lines discarded\n";
 }
 
 main();
